@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# /etc/init.d/alert-stream
+
+### BEGIN INIT INFO
+
+# Provides:          alert-stream
+
+# Required-Start:    $remote_fs $syslog
+
+# Required-Stop:     $remote_fs $syslog
+
+# Default-Start:     2 3 4 5
+
+# Default-Stop:      0 1 6
+
+# Short-Description: Powerswitch security
+
+# Description:       Alerts administrator when webcam creates new video (motion)
+
+### END INIT INFO
+
+
+########### process file #############
+PID_FILE="/var/run/alert-stream.pid" #
+######################################
+
+# get the process id #
+
+rtn_pid() {
+
+   cat "$PID_FILE"
+
+}
+
+# SERVICE CONTROL #
+
+case "$1" in
+
+   start)
+
+      echo "starting alert stream..."
+
+      ruby /home/admin/service/alert/execstream &
+
+      echo $! > "$PID_FILE"
+
+      ;;
+
+   stop)
+
+      echo "stopping alert stream..."
+
+      kill `rtn_pid`
+
+      ;;
+
+   *)
+
+      echo "usage: /etc/init.d/alert-stream start|stop"
+
+      exit 1
+
+      ;;
+
+esac
+
+exit 0

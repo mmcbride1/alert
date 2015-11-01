@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+require '/home/admin/service/alert/alertstream.rb'
+
+SUBJECT = "Entry Motion Detected"
+
+cam = WebCam.new('/mnt/ss-shared')
+
+count = cam.getfilecount
+
+init = cam.setcount(count)
+
+loop do
+
+   nowval = cam.getfilecount
+
+   if nowval > init
+
+      cam.email SUBJECT
+
+   end
+
+   init = cam.setcount(nowval)
+
+end

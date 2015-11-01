@@ -1,0 +1,59 @@
+#!/bin/bash
+
+############
+# wlan0RC1 #
+############
+
+#* Check if network has 
+#* been dropped. If so,
+#* jumpstart the network.
+#* This has been established
+#* due to several network 
+#* drops over wireless on the
+#* revrecon system.
+
+# process log #
+
+function log() {
+
+   LOG_FILE=/var/log/wlan0RC1.log
+
+   echo `date` "- $1" >> $LOG_FILE
+
+} 
+
+# check connection and restart #
+
+function conn() {
+
+   wget -q --spider http://www.google.com
+
+   if [ "$?" != 0 ]; then
+
+      log "network connection lost"
+
+      /etc/init.d/networking restart
+
+      if [ "$?" != 0 ]; then
+
+         log "network restart failed"
+
+      else
+
+         log "network restarted"
+
+      fi
+
+   fi
+
+}
+
+# run #
+
+while [ true ]
+do
+
+   sleep 20
+   conn
+
+done
