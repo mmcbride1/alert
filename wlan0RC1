@@ -13,47 +13,28 @@
 #* revrecon system.
 
 # process log #
-
 function log() {
-
    LOG_FILE=/var/log/wlan0RC1.log
-
    echo `date` "- $1" >> $LOG_FILE
-
 } 
 
 # check connection and restart #
-
 function conn() {
-
    wget -q --spider http://www.google.com
-
    if [ "$?" != 0 ]; then
-
       log "network connection lost"
-
       /etc/init.d/networking restart
-
       if [ "$?" != 0 ]; then
-
          log "network restart failed"
-
       else
-
          log "network restarted"
-
       fi
-
    fi
-
 }
 
 # run #
-
 while [ true ]
 do
-
    sleep 20
    conn
-
 done

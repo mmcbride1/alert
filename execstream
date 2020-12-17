@@ -2,24 +2,27 @@
 
 require '/home/admin/service/alert/alertstream.rb'
 
+# Alert subject
 SUBJECT = "Entry Motion Detected"
 
+# Webcam
 cam = WebCam.new('/mnt/ss-shared')
 
+# Starting file count 
 count = cam.getfilecount
 
+# Set file count 
 init = cam.setcount(count)
 
+# Update file count
 loop do
-
+   # Count now  
    nowval = cam.getfilecount
-
+   # When new file send 
+   # message 
    if nowval > init
-
       cam.email SUBJECT
-
    end
-
+   # Update count 
    init = cam.setcount(nowval)
-
 end
