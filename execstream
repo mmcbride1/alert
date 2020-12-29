@@ -2,10 +2,15 @@
 
 require '/home/admin/service/alert/alertstream.rb'
 
+# Set up the alert stream
 alert = Alert.new('/mnt/ss-shared')
 
+# Retrieve video file
 video_file = alert.getvideo()
 
+# If video exists, send as 
+# attachment with alert and 
+# delete video file
 if video_file != nil
   alert.sendalert(video_file)
   begin
