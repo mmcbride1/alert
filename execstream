@@ -3,7 +3,7 @@
 require 'alertstream.rb'
 
 # Set up the alert stream
-alert = Alert.new('/mnt/ss-shared')
+alert = Alert.new
 
 # Retrieve video file
 video_file = alert.getvideo()
@@ -12,11 +12,14 @@ video_file = alert.getvideo()
 # attachment with alert and 
 # delete video file
 if video_file != nil
-  alert.sendalert(video_file)
   begin
+    # Send alert
+    alert.sendalert(video_file)
+    # Delete video file
     alert.deletevideo(video_file)
   rescue Exception => ex
     print "Exception occured: " + ex.to_s + "\n"
+    exit!
   end
 else 
   print "No video file found\n"
