@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require '/home/admin/service/alert/alertstream.rb'
+require 'alertstream.rb'
 
 # Set up the alert stream
 alert = Alert.new('/mnt/ss-shared')
@@ -16,8 +16,8 @@ if video_file != nil
   begin
     alert.deletevideo(video_file)
   rescue Exception => ex
-    print "An exception has occured: " + ex
+    print "Exception occured: " + ex.to_s + "\n"
   end
 else 
-  print "No video file found"
+  print "No video file found\n"
 end

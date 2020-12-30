@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'net/smtp'
+require 'rubygems'
+require 'mailfactory'
 
 # Class accesses configuration
 class Config
@@ -22,15 +24,9 @@ class Email
     @filename = filename
   end
 
-  def getconfig
+  def buildmsg
+    # Config
     config = Config.new.config()
-    return config
-  end
-
-  def buildmsg 
-    content = File.read(@filename)
-    encoded = [content].pack("m")
-    config  = getconfig()
 
     # Credentials
     from = config[:from]
@@ -38,58 +34,27 @@ class Email
     pass = config[:pass]
     mesg = config[:mesg]
 
-    # Message marker
-    marker  = "AUNIQUEMARKER"
+    # Mailer
+    mail = MailFactory.new()
 
-    # Message body
-    body = <<-EOF 
-    #{mesg}
-    EOF
+    # Message setup
+    mail.to      = user
+    mail.from    = from
+    mail.subject = "Motion detected!"
+    mail.text    = "See fileshare for video log."
 
-    # Message headers
-    headers = <<-EOF
-    From: #{from}
-    To: #{user}
-    Subject: Motion detected!
-    MIME-Version: 1.0
-    Content-Type: multipart/mixed; boundry = #{marker}
-    --#{marker}
-    EOF
+    # Attach video file
+    mail.attach(@filename)
 
-    # Message action
-    action = <<-EOF
-    Content-type: text/plain
-    Content-Transfer-Encoding:8bit
-
-    #{body}
-    --#{marker}
-    EOF
-
-    # Message attachment
-    attachment = <<-EOF
-    Content-Type: multipart/mixed; name = \"#{@filename}\"
-    Content-Transfer-Encoding:base64
-    Content-Disposition: attachment; filename = "#{@filename}"
-
-    #{encoded}
-    --#{marker}--
-    EOF
-
-    # Message
-    message = headers + action + attachment
-    return message
-  end
-
-  def sendmsg
-    # Build message
-    msg = buildmsg()
-    # Send Message
-    begin
-      Net::SMTP.start('gmail.com', from, pass, :login) do |smtp|
-        smtp.sendmail(msg, from, user)
-      end
+    # Send
+    begin 
+      smtp = Net::SMTP.new 'smtp.gmail.com', 587
+      smtp.enable_starttls
+      smtp.start('gmail.com', from, pass, :login)
+      smtp.sendmail(mail.to_s, from, user)
+      smtp.finish
     rescue Exception => ex
-      print "Exception occured: " + ex
+      print "Exception occured: " + ex.to_s + "\n"
     end
   end
 
@@ -113,13 +78,12 @@ class Alert
     return video_file
   end
 
-  def deltevideo(file)
-    path = @videos + "/#{file}"
-    File.delete(path)
+  def deletevideo(video_file)
+    File.delete(video_file)
   end
 
-  def sendalert(file)
-    Email.new(file).sendmsg()
+  def sendalert(video_file)
+    Email.new(video_file).sendmsg()
   end
 
 end
