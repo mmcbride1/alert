@@ -24,7 +24,7 @@ class Email
     @filename = filename
   end
 
-  def sendmsg
+  def buildmsg
     # Config
     config = Config.new.config()
 
@@ -83,7 +83,7 @@ class Alert
   end
 
   def sendalert(video_file)
-    Email.new(video_file).sendmsg()
+    Email.new(video_file).buildmsg()
   end
 
 end
