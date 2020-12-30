@@ -24,7 +24,7 @@ class Email
     @filename = filename
   end
 
-  def buildmsg
+  def sendmsg
     # Config
     config = Config.new.config()
 
