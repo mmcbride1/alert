@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'alertstream.rb'
+require_relative 'alertstream.rb'
 
 # Set up the alert stream
 alert = Alert.new
