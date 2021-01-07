@@ -15,6 +15,7 @@ if video_file != nil
   begin
     # Send alert
     alert.sendalert(video_file)
+    print "Alert sent successfully.\n"
     # Delete video file
     alert.deletevideo(video_file)
   rescue Exception => ex
@@ -22,5 +23,5 @@ if video_file != nil
     exit!
   end
 else 
-  print "No video file found\n"
+  print "No video file found.\n"
 end
