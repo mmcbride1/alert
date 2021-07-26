@@ -5,11 +5,11 @@ require 'rubygems'
 require 'mailfactory'
 
 # Class accesses configuration
-class Config
+class Configz
 
   # Get config
   def config()
-     file = 'alert.conf'
+     file = '/home/admin/alert/alert.conf'
      conf = eval(File.open(file) {|f| f.read})
      return conf
   end
@@ -26,7 +26,7 @@ class Email
 
   def buildmsg
     # Config
-    config = Config.new.config()
+    config = Configz.new.config()
 
     # Credentials
     from = config[:from]
@@ -60,7 +60,7 @@ end
 class Alert
 
   # Video folder
-  @@config = Config.new.config()
+  @@config = Configz.new.config()
   @@videos = @@config[:vids]
 
   def getvideo
