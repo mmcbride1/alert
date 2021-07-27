@@ -1,28 +1,27 @@
 #!/usr/bin/env ruby
 
-require '/home/admin/service/alert/alertstream.rb'
+require_relative 'alertstream.rb'
 
-# Alert subject
-SUBJECT = "Entry Motion Detected"
+# Set up the alert stream
+alert = Alert.new
 
-# Webcam
-cam = WebCam.new('/mnt/ss-shared')
+# Retrieve video file
+video_file = alert.getvideo()
 
-# Starting file count 
-count = cam.getfilecount
-
-# Set file count 
-init = cam.setcount(count)
-
-# Update file count
-loop do
-   # Count now  
-   nowval = cam.getfilecount
-   # When new file send 
-   # message 
-   if nowval > init
-      cam.email SUBJECT
-   end
-   # Update count 
-   init = cam.setcount(nowval)
+# If video exists, send as 
+# attachment with alert and 
+# delete video file
+if video_file != nil
+  begin
+    # Send alert
+    alert.sendalert(video_file)
+    print "Alert sent successfully.\n"
+    # Delete video file
+    alert.deletevideo(video_file)
+  rescue Exception => ex
+    print "Exception occured: " + ex.to_s + "\n"
+    exit!
+  end
+else 
+  print "No video file found.\n"
 end
