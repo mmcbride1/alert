@@ -21,24 +21,38 @@ end
 class Email
 
   def initialize(filename)
+    # Init video filename
     @filename = filename
+
+    # Init configuration
+    @config = Configz.new.config()
+
+    # Init mail properties
+    @from = @config[:from]
+    @user = @config[:mail]
+    @pass = @config[:pass]
   end
 
-  def buildmsg
-    # Config
-    config = Configz.new.config()
+  def build_alert_msg
+    # Setup message
+    sub = "Subject: Motion detected!"
+    msg = sub + "\n" + "This is an alert."
 
-    # Credentials
-    from = config[:from]
-    user = config[:mail]
-    pass = config[:pass]
+    # Build message
+    smtp = Net::SMTP.new 'smtp.gmail.com', 587
+    smtp.enable_starttls
+    smtp.start('gmail.com', @from, @pass, :login)
+    smtp.send_message msg, @from, @user
+    smtp.finish
+  end
 
+  def build_vid_msg
     # Mailer
     mail = MailFactory.new()
 
     # Message setup
-    mail.to      = user
-    mail.from    = from
+    mail.to      = @user
+    mail.from    = @from
     mail.subject = "Motion detected!"
     mail.text    = "See fileshare for video log."
 
@@ -48,8 +62,8 @@ class Email
     # Send
     smtp = Net::SMTP.new 'smtp.gmail.com', 587
     smtp.enable_starttls
-    smtp.start('gmail.com', from, pass, :login)
-    smtp.sendmail(mail.to_s, from, user)
+    smtp.start('gmail.com', @from, @pass, :login)
+    smtp.sendmail(mail.to_s, @from, @user)
     smtp.finish
   end
 
@@ -78,7 +92,15 @@ class Alert
   end
 
   def sendalert(video_file)
-    Email.new(video_file).buildmsg()
+    alert = Email.new(video_file)
+    alert.build_vid_msg()
+    # Required to send a second message with
+    # separate config here because, for some reason,
+    # gmail fails to send a notification when the
+    # message is built with an attachment, 
+    # rendering this process effectively useless.
+    # The second mail triggers the notification.
+    alert.build_alert_msg()
   end
 
 end
